@@ -86,4 +86,4 @@ This application is not officially affiliated with SAM.gov or any government age
 
 ## Support
 
-For issues, questions, or feature requests, please open an issue in the GitHub repository or contact [Your Contact Information].
+For issues, questions, or feature requests, please open an issue in the GitHub repository or contact info@seanpawley.com

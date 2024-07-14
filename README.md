@@ -1,8 +1,8 @@
-# SAM.gov Contract Filter
+# SAM.gov Reader
 
 ## Description
 
-The SAM.gov Contract Filter is a powerful desktop application designed to help users search, analyze, and manage government contract data from SAM.gov (System for Award Management). This tool provides an intuitive interface for filtering contracts, performing AI-enhanced searches using Claude AI, and exporting results in various formats.
+The SAM.gov Reader is a powerful desktop application designed to help users search, analyze, and manage government contract data from SAM.gov (System for Award Management). This tool provides an intuitive interface for filtering contracts, performing AI-enhanced searches using Claude AI, and exporting results in various formats.
 
 ## Features
 
@@ -32,7 +32,16 @@ The SAM.gov Contract Filter is a powerful desktop application designed to help u
 pip install PyQt5 pandas openpyxl anthropic
 ```
 
-3. Ensure you have an Anthropic API key for Claude AI functionality.
+3. Ensure you have an Anthropic API key for Claude AI functionality (optional).
+
+## File Structure
+
+- `main.py`: Entry point of the application
+- `gui.py`: Main application GUI and logic
+- `contract_database.py`: SQLite database operations for contract data
+- `claude_search.py`: Implementation of Claude AI search capabilities
+- `search_worker.py`: Background worker for AI-enhanced searches
+- `utils.py`: Utility functions used across the application
 
 ## Usage
 
@@ -43,21 +52,23 @@ python main.py
 ```
 
 2. Load a SAM.gov CSV file using the "Select CSV File" button.
-3. Enter your Anthropic API key in the provided field and click "Set API Key".
+3. (Optional) Enter your Anthropic API key in the provided field and click "Set API Key".
 4. Use the search tabs to filter contracts:
    - Basic Search: Keyword, date range, and agency selection
-   - Advanced Search: NAICS code, contract value range, and performance location
+   - Advanced Search: NAICS code, PSC code, set-aside, and contract value range
 5. Click "Search Contracts" to perform a search.
-6. Use the "Use Claude AI" checkbox for AI-enhanced searching.
+6. Use the "Use Claude AI" checkbox for AI-enhanced searching (requires API key).
 7. View results in the table, navigate through pages, and perform bulk operations as needed.
 8. Export results using the export options at the bottom of the window.
 
-## File Structure
+## AI-Enhanced Features
 
-- `main.py`: Main application file with GUI implementation
-- `contract_database.py`: SQLite database operations for contract data
-- `claude_search.py`: Implementation of Claude AI search capabilities
-- `contracts.db`: SQLite database file (created when loading CSV data)
+If you've set up the Anthropic API key, you can use the following AI-enhanced features:
+
+- Query enhancement
+- Contract relevance analysis
+- Result summarization
+- Entity extraction
 
 ## Contributing
 
@@ -66,6 +77,12 @@ Contributions to improve the SAM.gov Contract Filter are welcome. Please fork th
 ## Disclaimer
 
 This application is not officially affiliated with SAM.gov or any government agency. It is a third-party tool designed to assist with contract data analysis. Users are responsible for ensuring compliance with all applicable regulations when using this tool.
+
+## Troubleshooting
+
+- If you encounter any issues, check the `sam_contract_filter.log` file for error messages and details.
+- Ensure all required libraries are installed and up to date.
+- Verify that your CSV file follows the expected SAM.gov format.
 
 ## Support
 

@@ -300,9 +300,6 @@ class MainWindow(QMainWindow):
 
     def on_search_error(self, error):
         QMessageBox.critical(self, "Error", f"An error occurred during the search: {error}")
-        self.
-        def on_search_error(self, error):
-        QMessageBox.critical(self, "Error", f"An error occurred during the search: {error}")
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
 

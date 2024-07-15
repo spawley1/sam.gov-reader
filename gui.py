@@ -190,26 +190,32 @@ class MainWindow(QMainWindow):
         else:
             QMessageBox.warning(self, "Warning", "Please enter an API key")
 
-    def load_csv(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select CSV File", "", "CSV Files (*.csv)")
-        if file_path:
-            self.file_entry.setText(file_path)
-            try:
-                contracts = []
-                with open(file_path, 'r', newline='', encoding='utf-8') as csvfile:
-                    reader = csv.DictReader(csvfile)
-                    for row in reader:
-                        contracts.append(row)
-                
-                self.db.insert_contracts(contracts)
-                self.update_agency_list()
-                self.update_setaside_options()
-                QMessageBox.information(self, "Info", f"Loaded {len(contracts)} contracts")
-                logger.info(f"Successfully loaded {len(contracts)} contracts from {file_path}")
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Failed to load CSV file: {e}")
-                logger.error(f"Failed to load CSV file: {e}", exc_info=True)
-
+   def load_csv(self):
+    file_path, _ = QFileDialog.getOpenFileName(self, "Select CSV File", "", "CSV Files (*.csv)")
+    if file_path:
+        self.file_entry.setText(file_path)
+        try:
+            # Detect the file encoding
+            with open(file_path, 'rb') as rawdata:
+                result = chardet.detect(rawdata.read(10000))
+            
+            encoding = result['encoding']
+            
+            contracts = []
+            with open(file_path, 'r', newline='', encoding=encoding) as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    contracts.append(row)
+            
+            self.db.insert_contracts(contracts)
+            self.update_agency_list()
+            self.update_setaside_options()
+            QMessageBox.information(self, "Info", f"Loaded {len(contracts)} contracts")
+            logger.info(f"Successfully loaded {len(contracts)} contracts from {file_path}")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to load CSV file: {str(e)}")
+            logger.error(f"Failed to load CSV file: {str(e)}", exc_info=True)
+          
     def update_agency_list(self):
         try:
             agencies = set()

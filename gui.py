@@ -1,4 +1,5 @@
 import csv
+import chardet
 import json
 import pandas as pd
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 

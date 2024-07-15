@@ -6,18 +6,19 @@ logger = logging.getLogger(__name__)
 
 class ClaudeSearch:
     def __init__(self, api_key: str):
-        self.client = anthropic.Client(api_key)
+        self.client = anthropic.Anthropic(api_key=api_key)
         self.model = "claude-3-sonnet-20240229"  # Use the latest model available
 
     def enhance_query(self, user_query: str) -> str:
         try:
-            prompt = f"Enhance the following search query for government contracts: {user_query}\n\nEnhanced query:"
-            response = self.client.completions.create(
+            message = self.client.messages.create(
                 model=self.model,
-                prompt=prompt,
-                max_tokens_to_sample=100
+                max_tokens=100,
+                messages=[
+                    {"role": "user", "content": f"Enhance the following search query for government contracts: {user_query}"}
+                ]
             )
-            return response.completion.strip()
+            return message.content[0].text
         except Exception as e:
             logger.error(f"Error in enhance_query: {e}")
             return user_query  # Return original query if enhancement fails
@@ -30,18 +31,21 @@ class ClaudeSearch:
                 prompt += f"Contract: {json.dumps(contract)}\n"
             prompt += "\nProvide a relevance score (0-100) and brief explanation for each contract."
             
-            response = self.client.completions.create(
+            message = self.client.messages.create(
                 model=self.model,
-                prompt=prompt,
-                max_tokens_to_sample=1000
+                max_tokens=1000,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
             )
             
             # Parse the response and add relevance scores to contracts
             analyzed_contracts = []
-            for contract, analysis in zip(contracts, response.completion.strip().split("\n\n")):
+            analysis = message.content[0].text
+            for contract, analysis_part in zip(contracts, analysis.strip().split("\n\n")):
                 try:
-                    score = float(analysis.split(":")[1].split()[0])
-                    explanation = ":".join(analysis.split(":")[2:]).strip()
+                    score = float(analysis_part.split(":")[1].split()[0])
+                    explanation = ":".join(analysis_part.split(":")[2:]).strip()
                     analyzed_contracts.append({**contract, "relevance_score": score, "explanation": explanation})
                 except Exception as e:
                     logger.error(f"Error parsing contract analysis: {e}")
@@ -62,12 +66,14 @@ class ClaudeSearch:
                 prompt += f"Relevance: {result.get('relevance_score', 'N/A')}\n\n"
             prompt += "Summary:"
             
-            response = self.client.completions.create(
+            message = self.client.messages.create(
                 model=self.model,
-                prompt=prompt,
-                max_tokens_to_sample=200
+                max_tokens=200,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
             )
-            return response.completion.strip()
+            return message.content[0].text.strip()
         except Exception as e:
             logger.error(f"Error in summarize_results: {e}")
             return "Unable to generate summary due to an error."
@@ -80,10 +86,12 @@ class ClaudeSearch:
                 prompt += f"Contract: {json.dumps(contract)}\n\n"
             prompt += "Extracted Entities:"
             
-            response = self.client.completions.create(
+            message = self.client.messages.create(
                 model=self.model,
-                prompt=prompt,
-                max_tokens_to_sample=500
+                max_tokens=500,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
             )
             
             # Parse the response into a structured format
@@ -95,7 +103,7 @@ class ClaudeSearch:
                 "Important Dates": []
             }
             current_category = None
-            for line in response.completion.strip().split("\n"):
+            for line in message.content[0].text.strip().split("\n"):
                 line = line.strip()
                 if line in entities:
                     current_category = line
